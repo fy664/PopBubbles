@@ -41,6 +41,7 @@ void Game::run() {
 
         Input::update();
         handleEvents();
+        handleInput();
         update(deltaTime);
         render();
     }
@@ -65,6 +66,12 @@ void Game::handleEvents() {
                 }
                 break;
         }
+    }
+}
+
+void Game::handleInput() {
+    if (!m_stateStack.empty()) {
+        m_stateStack.back()->handleInput(m_window);
     }
 }
 

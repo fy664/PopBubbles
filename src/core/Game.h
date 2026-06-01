@@ -39,6 +39,7 @@ public:
 
 private:
     void handleEvents();
+    void handleInput();
     void update(float deltaTime);
     void render();
 
