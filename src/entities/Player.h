@@ -68,8 +68,8 @@ private:
     void handleAttack(float deltaTime);
     void updateNeedle();
 
+    int m_maxHp = BASE_MAX_HP;   // 必须在 m_hp 之前声明（构造函数用 m_maxHp 初始化 m_hp）
     int m_hp;
-    int m_maxHp = BASE_MAX_HP;
     int m_level = 1;
     int m_kills = 0;
     bool m_invincible;
