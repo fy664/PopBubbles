@@ -8,10 +8,10 @@
  */
 class ShooterBubble : public Bubble {
 public:
-    static constexpr float PREFERRED_DISTANCE_MIN = 200.f;
-    static constexpr float PREFERRED_DISTANCE_MAX = 300.f;
-    static constexpr float SHOOT_INTERVAL = 3.f;
-    static constexpr float SPEED = 100.f;
+    static constexpr float PREFERRED_DISTANCE_MIN = 180.f;
+    static constexpr float PREFERRED_DISTANCE_MAX = 280.f;
+    static constexpr float SHOOT_INTERVAL = 2.5f;
+    static constexpr float SPEED = 110.f;
     static constexpr int SCORE_VALUE = 30;
 
     ShooterBubble();

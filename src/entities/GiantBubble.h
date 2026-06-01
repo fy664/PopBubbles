@@ -10,12 +10,12 @@
  */
 class GiantBubble : public Bubble {
 public:
-    static constexpr float NORMAL_SPEED = 60.f;
-    static constexpr float CHARGE_SPEED = 180.f;
-    static constexpr float CHARGE_RANGE = 150.f;
+    static constexpr float NORMAL_SPEED = 70.f;
+    static constexpr float CHARGE_SPEED = 200.f;
+    static constexpr float CHARGE_RANGE = 140.f;
     static constexpr float CHARGE_DURATION = 0.5f;
     static constexpr float CHARGE_COOLDOWN = 1.f;
-    static constexpr float RADIUS = 40.f;
+    static constexpr float RADIUS = 26.f;
     static constexpr int SCORE_VALUE = 50;
     static constexpr int MAX_HP = 2;
 

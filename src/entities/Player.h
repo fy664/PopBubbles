@@ -10,14 +10,15 @@
  */
 class Player : public Entity {
 public:
-    static constexpr float SPEED = 300.f;
-    static constexpr float RADIUS = 25.f;
+    static constexpr float SPEED = 350.f;
+    static constexpr float RADIUS = 18.f;
     static constexpr int MAX_HP = 5;
     static constexpr float INVINCIBLE_TIME = 1.5f;
-    static constexpr float NEEDLE_LENGTH = 50.f;      // 尖针总长度
-    static constexpr float NEEDLE_EXTEND = 30.f;       // 戳刺时额外延伸距离
+    static constexpr float NEEDLE_LENGTH = 55.f;      // 尖针从球心伸出总长度
+    static constexpr float NEEDLE_EXTEND = 35.f;       // 戳刺时额外延伸距离
     static constexpr float NEEDLE_ATTACK_DURATION = 0.3f; // 攻击持续时间
-    static constexpr float NEEDLE_WIDTH = 6.f;         // 尖针粗细
+    static constexpr float NEEDLE_WIDTH = 5.f;         // 尖针粗细
+    static constexpr int KILLS_PER_LEVEL = 10;         // 每10击杀升一级
 
     Player();
 
@@ -29,6 +30,15 @@ public:
 
     // 回复生命值
     void heal();
+    void healFull() { m_hp = MAX_HP; }
+
+    // 等级系统
+    void addKill();
+    int getLevel() const { return m_level; }
+    int getKills() const { return m_kills; }
+
+    // 被巨型泡泡击退
+    void applyRecoil(sf::Vector2f from, float strength);
 
     // 状态查询
     bool isInvincible() const { return m_invincible; }
@@ -57,6 +67,8 @@ private:
     void updateNeedle();
 
     int m_hp;
+    int m_level = 1;
+    int m_kills = 0;
     bool m_invincible;
     float m_invincibleTimer;
     float m_blinkTimer;

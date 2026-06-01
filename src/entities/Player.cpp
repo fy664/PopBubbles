@@ -164,19 +164,38 @@ sf::Vector2f Player::getNeedleTip() const {
 }
 
 std::pair<sf::Vector2f, sf::Vector2f> Player::getNeedleLine() const {
-    // 针从玩家边缘开始
-    sf::Vector2f start = {
-        m_position.x + std::cos(m_needleAngle) * (m_radius - 5.f),
-        m_position.y + std::sin(m_needleAngle) * (m_radius - 5.f)
-    };
+    // 针从球体内部中心伸出
+    sf::Vector2f start = m_position;
     sf::Vector2f end = getNeedleTip();
     return {start, end};
 }
 
 float Player::getCurrentNeedleLength() const {
-    float baseLen = m_radius + NEEDLE_LENGTH;
+    float baseLen = NEEDLE_LENGTH;  // 从球心算起的针长
     float extendLen = NEEDLE_EXTEND * m_needleAnimProgress;
     return baseLen + extendLen;
+}
+
+void Player::addKill() {
+    m_kills++;
+    int newLevel = m_kills / KILLS_PER_LEVEL + 1;
+    if (newLevel > m_level) {
+        m_level = newLevel;
+        healFull();  // 升级回满血
+    }
+}
+
+void Player::applyRecoil(sf::Vector2f from, float strength) {
+    sf::Vector2f dir = m_position - from;
+    float len = std::sqrt(dir.x * dir.x + dir.y * dir.y);
+    if (len > 0.0001f) {
+        dir.x /= len;
+        dir.y /= len;
+    }
+    m_position.x += dir.x * strength;
+    m_position.y += dir.y * strength;
+    clampToScreen(Game::WINDOW_WIDTH, Game::WINDOW_HEIGHT);
+    m_body.setPosition(m_position);
 }
 
 void Player::setNeedleAngle(float angle) {

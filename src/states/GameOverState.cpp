@@ -23,17 +23,17 @@ GameOverState::GameOverState()
     m_scoreText.setFont(font);
     m_scoreText.setCharacterSize(32);
     m_scoreText.setFillColor(sf::Color(255, 220, 100));
-    m_scoreText.setPosition(Game::WINDOW_WIDTH / 2.f, 170.f);
+    m_scoreText.setPosition(Game::WINDOW_WIDTH / 2.f, 160.f);
 
     m_statusText.setFont(font);
     m_statusText.setCharacterSize(20);
     m_statusText.setFillColor(sf::Color(100, 255, 100));
-    m_statusText.setPosition(Game::WINDOW_WIDTH / 2.f, 350.f);
+    m_statusText.setPosition(Game::WINDOW_WIDTH / 2.f, 420.f);
 
     // 姓名输入框
     m_nameInput = TextBox(font, 28,
-                          sf::Vector2f(Game::WINDOW_WIDTH / 2.f - 175.f, 220.f),
-                          sf::Vector2f(350.f, 45.f), 10);
+                          sf::Vector2f(Game::WINDOW_WIDTH / 2.f - 200.f, 230.f),
+                          sf::Vector2f(400.f, 50.f), 10);
     m_nameInput.setPlaceholder(L"输入你的名字...");
 
     m_nameInput.setCallback([this](const std::string&) {
@@ -42,16 +42,16 @@ GameOverState::GameOverState()
 
     // 提交按钮
     m_submitBtn = Button(L"提交成绩", font, 24,
-                         sf::Vector2f(Game::WINDOW_WIDTH / 2.f, 285.f),
-                         sf::Vector2f(240.f, 45.f));
+                         sf::Vector2f(Game::WINDOW_WIDTH / 2.f, 310.f),
+                         sf::Vector2f(240.f, 50.f));
     m_submitBtn.setColors(sf::Color(40, 120, 40), sf::Color(50, 160, 50), sf::Color(30, 80, 30));
     m_submitBtn.setTextColor(sf::Color::White);
     m_submitBtn.setCallback([this]() { onSubmitScore(); });
 
     // 返回主菜单按钮
     m_returnBtn = Button(L"返回主菜单", font, 24,
-                         sf::Vector2f(Game::WINDOW_WIDTH / 2.f, 420.f),
-                         sf::Vector2f(240.f, 45.f));
+                         sf::Vector2f(Game::WINDOW_WIDTH / 2.f, 490.f),
+                         sf::Vector2f(240.f, 50.f));
     m_returnBtn.setColors(sf::Color(100, 60, 30), sf::Color(140, 80, 40), sf::Color(70, 40, 20));
     m_returnBtn.setTextColor(sf::Color::White);
     m_returnBtn.setCallback([this]() { onReturnToMenu(); });

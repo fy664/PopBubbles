@@ -44,7 +44,7 @@ static sf::Vector2f randomEdgePosition() {
 
 GameState::GameState()
     : m_spawnTimer(0.f)
-    , m_spawnInterval(2.f)
+    , m_spawnInterval(1.5f)
     , m_difficultyTimer(0.f)
     , m_difficultyLevel(1)
     , m_score(0)
@@ -79,7 +79,7 @@ void GameState::onEnter() {
     m_score = 0;
     m_difficultyLevel = 1;
     m_spawnTimer = 0.f;
-    m_spawnInterval = 2.f;
+    m_spawnInterval = 1.5f;
     m_difficultyTimer = 0.f;
     m_screenShake = 0.f;
 }
@@ -166,10 +166,10 @@ void GameState::update(float deltaTime) {
 
     // 难度递增
     m_difficultyTimer += deltaTime;
-    if (m_difficultyTimer >= 15.f) {
+    if (m_difficultyTimer >= 7.5f) {  // 难度翻倍速度
         m_difficultyTimer = 0.f;
         m_difficultyLevel++;
-        m_spawnInterval = std::max(0.4f, m_spawnInterval - 0.15f);
+        m_spawnInterval = std::max(0.25f, m_spawnInterval - 0.15f);
     }
 
     updateUI();
@@ -240,6 +240,7 @@ void GameState::checkCollisions() {
         auto onKill = [this](sf::Vector2f pos, int score, sf::Color color) {
             m_killStreak++;
             m_streakTimer = STREAK_WINDOW;
+            m_player.addKill();  // 玩家击杀计数+等级系统
             int bonusScore = score;
             std::wstring text = L"+" + std::to_wstring(score);
             if (m_killStreak >= 5) {
@@ -281,6 +282,9 @@ void GameState::checkCollisions() {
             if (Collision::lineCircle(needleStart, needleEnd,
                                        gb->getPosition(), gb->getRadius())) {
                 gb->takeDamage();
+                // 巨型泡泡碰撞回弹
+                m_player.applyRecoil(gb->getPosition(), 15.f);
+                m_screenShake = std::max(m_screenShake, 0.15f);
                 if (!gb->isActive()) {
                     onKill(gb->getPosition(), GiantBubble::SCORE_VALUE, gb->getColor());
                 } else {
@@ -327,6 +331,49 @@ void GameState::checkCollisions() {
                 damagePlayer(gb->getPosition(), gb->getColor(), 0.3f);
                 gb->setActive(false);
                 break;
+            }
+        }
+    }
+
+    // 泡泡间碰撞检测（弹开效果）
+    auto bubbleBounce = [](auto& bubbles) {
+        for (size_t i = 0; i < bubbles.size(); ++i) {
+            if (!bubbles[i]->isActive()) continue;
+            for (size_t j = i + 1; j < bubbles.size(); ++j) {
+                if (!bubbles[j]->isActive()) continue;
+                if (Collision::circleCircle(bubbles[i]->getPosition(), bubbles[i]->getRadius(),
+                                             bubbles[j]->getPosition(), bubbles[j]->getRadius())) {
+                    // Push apart
+                    sf::Vector2f diff = bubbles[i]->getPosition() - bubbles[j]->getPosition();
+                    float dist = std::sqrt(diff.x * diff.x + diff.y * diff.y);
+                    if (dist < 0.001f) { diff = {1.f, 0.f}; dist = 1.f; }
+                    sf::Vector2f normal = diff / dist;
+                    float overlap = (bubbles[i]->getRadius() + bubbles[j]->getRadius()) - dist;
+                    float push = overlap * 0.5f + 1.f;
+                    bubbles[i]->setPosition(bubbles[i]->getPosition() + normal * push);
+                    bubbles[j]->setPosition(bubbles[j]->getPosition() - normal * push);
+                }
+            }
+        }
+    };
+    bubbleBounce(m_bubbles);
+    bubbleBounce(m_shooterBubbles);
+    bubbleBounce(m_giantBubbles);
+    // Cross-type collisions
+    for (auto& a : m_bubbles) {
+        if (!a->isActive()) continue;
+        for (auto& sb : m_shooterBubbles) {
+            if (!sb->isActive()) continue;
+            if (Collision::circleCircle(a->getPosition(), a->getRadius(),
+                                         sb->getPosition(), sb->getRadius())) {
+                sf::Vector2f diff = a->getPosition() - sb->getPosition();
+                float dist = std::sqrt(diff.x * diff.x + diff.y * diff.y);
+                if (dist < 0.001f) { diff = {1.f, 0.f}; dist = 1.f; }
+                sf::Vector2f normal = diff / dist;
+                float overlap = (a->getRadius() + sb->getRadius()) - dist;
+                float push = overlap * 0.5f + 1.f;
+                a->setPosition(a->getPosition() + normal * push);
+                sb->setPosition(sb->getPosition() - normal * push);
             }
         }
     }
@@ -388,7 +435,8 @@ void GameState::spawnEnemy(float deltaTime) {
 
 void GameState::updateUI() {
     m_scoreText.setString(L"得分: " + std::to_wstring(m_score));
-    m_hpText.setString(L"生命: " + std::to_wstring(m_player.getHP()) + L"/" + std::to_wstring(Player::MAX_HP));
+    m_hpText.setString(L"生命: " + std::to_wstring(m_player.getHP()) + L"/" + std::to_wstring(Player::MAX_HP) +
+                       L"  Lv." + std::to_wstring(m_player.getLevel()));
     m_waveText.setString(L"难度: " + std::to_wstring(m_difficultyLevel));
 }
 

@@ -10,8 +10,8 @@
  */
 class Bubble : public Entity {
 public:
-    static constexpr float BASE_SPEED = 120.f;
-    static constexpr float RADIUS = 20.f;
+    static constexpr float BASE_SPEED = 140.f;
+    static constexpr float RADIUS = 13.f;
     static constexpr int SCORE_VALUE = 10;
 
     enum class Type {

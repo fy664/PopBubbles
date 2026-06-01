@@ -9,9 +9,9 @@
  */
 class Bullet : public Entity {
 public:
-    static constexpr float SPEED = 250.f;
-    static constexpr float RADIUS = 8.f;
-    static constexpr float LIFETIME = 5.f;  // 最大生存时间
+    static constexpr float SPEED = 280.f;
+    static constexpr float RADIUS = 5.f;
+    static constexpr float LIFETIME = 4.f;  // 最大生存时间
 
     Bullet();
 

@@ -17,12 +17,12 @@ MainMenuState::MainMenuState() {
     sf::FloatRect titleBounds = m_titleText.getLocalBounds();
     m_titleText.setOrigin(titleBounds.left + titleBounds.width / 2.f,
                           titleBounds.top + titleBounds.height / 2.f);
-    m_titleText.setPosition(Game::WINDOW_WIDTH / 2.f, 150.f);
+    m_titleText.setPosition(Game::WINDOW_WIDTH / 2.f, 180.f);
 
     // 创建按钮
     float centerX = Game::WINDOW_WIDTH / 2.f;
-    float startY = 280.f;
-    float spacing = 80.f;
+    float startY = 320.f;
+    float spacing = 85.f;
 
     // 开始游戏按钮（origin 在中心，直接用 centerX）
     Button startBtn(L"开始游戏", font, 28,

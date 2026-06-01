@@ -10,8 +10,8 @@
  */
 class Game {
 public:
-    static constexpr unsigned int WINDOW_WIDTH = 1024;
-    static constexpr unsigned int WINDOW_HEIGHT = 768;
+    static constexpr unsigned int WINDOW_WIDTH = 1280;
+    static constexpr unsigned int WINDOW_HEIGHT = 900;
 
     Game();
     ~Game();
