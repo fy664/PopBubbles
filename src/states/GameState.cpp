@@ -233,64 +233,69 @@ void GameState::checkCollisions() {
     sf::Vector2f playerPos = m_player.getPosition();
     float playerRadius = m_player.getRadius();
 
-    // 玩家尖针攻击检测
-    if (m_player.isAttacking()) {
-        auto [needleStart, needleEnd] = m_player.getNeedleLine();
-
-        auto onKill = [this](sf::Vector2f pos, int score, sf::Color color) {
-            m_killStreak++;
-            m_streakTimer = STREAK_WINDOW;
-            m_player.addKill();  // 玩家击杀计数+等级系统
-            int bonusScore = score;
-            std::wstring text = L"+" + std::to_wstring(score);
-            if (m_killStreak >= 5) {
-                bonusScore += m_killStreak * 2;  // Streak bonus
-                text = L"+" + std::to_wstring(score) + L" x" + std::to_wstring(m_killStreak) + L"!";
-            }
-            m_score += bonusScore;
-            spawnEffect(pos, color);
-            spawnFloatingText(pos + sf::Vector2f(0.f, -20.f), text,
-                              m_killStreak >= 3 ? sf::Color(255, 255, 100) : sf::Color::White);
-            Audio::getInstance().playBubblePop();
-        };
-
-        // 检查普通泡泡
-        for (auto& bubble : m_bubbles) {
-            if (!bubble->isActive() || !bubble->canBeHit()) continue;
-            if (Collision::lineCircle(needleStart, needleEnd,
-                                       bubble->getPosition(), bubble->getRadius())) {
-                bubble->markHit();
-                onKill(bubble->getPosition(), bubble->getScoreValue(), bubble->getColor());
-                bubble->setActive(false);
-            }
+    // Kill callback (shared by passive and active needle)
+    auto onKill = [this](sf::Vector2f pos, int score, sf::Color color) {
+        m_killStreak++;
+        m_streakTimer = STREAK_WINDOW;
+        m_player.addKill();
+        int bonusScore = score;
+        std::wstring text = L"+" + std::to_wstring(score);
+        if (m_killStreak >= 5) {
+            bonusScore += m_killStreak * 2;
+            text = L"+" + std::to_wstring(score) + L" x" + std::to_wstring(m_killStreak) + L"!";
         }
+        m_score += bonusScore;
+        spawnEffect(pos, color);
+        spawnFloatingText(pos + sf::Vector2f(0.f, -20.f), text,
+                          m_killStreak >= 3 ? sf::Color(255, 255, 100) : sf::Color::White);
+        Audio::getInstance().playBubblePop();
+    };
 
-        // 检查射手泡泡
-        for (auto& sb : m_shooterBubbles) {
-            if (!sb->isActive() || !sb->canBeHit()) continue;
-            if (Collision::lineCircle(needleStart, needleEnd,
-                                       sb->getPosition(), sb->getRadius())) {
-                sb->markHit();
-                onKill(sb->getPosition(), ShooterBubble::SCORE_VALUE, sb->getColor());
-                sb->setActive(false);
-            }
+    // 尖针碰撞检测（始终生效，不攻击时尖针较短，攻击时延伸更长）
+    auto [needleStart, needleEnd] = m_player.getNeedleLine();
+
+    // 检查普通泡泡
+    for (auto& bubble : m_bubbles) {
+        if (!bubble->isActive() || !bubble->canBeHit()) continue;
+        if (Collision::lineCircle(needleStart, needleEnd,
+                                   bubble->getPosition(), bubble->getRadius())) {
+            bubble->markHit();
+            onKill(bubble->getPosition(), bubble->getScoreValue(), bubble->getColor());
+            bubble->setActive(false);
         }
+    }
 
-        // 检查巨型泡泡
-        for (auto& gb : m_giantBubbles) {
-            if (!gb->isActive() || !gb->canBeHit()) continue;
-            if (Collision::lineCircle(needleStart, needleEnd,
-                                       gb->getPosition(), gb->getRadius())) {
-                gb->takeDamage();
-                // 巨型泡泡碰撞回弹
-                m_player.applyRecoil(gb->getPosition(), 15.f);
-                m_screenShake = std::max(m_screenShake, 0.15f);
-                if (!gb->isActive()) {
-                    onKill(gb->getPosition(), GiantBubble::SCORE_VALUE, gb->getColor());
-                } else {
-                    spawnEffect(gb->getPosition(), sf::Color(255, 200, 150));
-                    spawnFloatingText(gb->getPosition(), L"1/2", sf::Color(255, 200, 150));
-                }
+    // 检查射手泡泡
+    for (auto& sb : m_shooterBubbles) {
+        if (!sb->isActive() || !sb->canBeHit()) continue;
+        if (Collision::lineCircle(needleStart, needleEnd,
+                                   sb->getPosition(), sb->getRadius())) {
+            sb->markHit();
+            onKill(sb->getPosition(), ShooterBubble::SCORE_VALUE, sb->getColor());
+            sb->setActive(false);
+        }
+    }
+
+    // 检查巨型泡泡
+    for (auto& gb : m_giantBubbles) {
+        if (!gb->isActive() || !gb->canBeHit()) continue;
+        if (Collision::lineCircle(needleStart, needleEnd,
+                                   gb->getPosition(), gb->getRadius())) {
+            gb->takeDamage();
+            // 双方回弹：玩家和巨型泡泡互相弹开
+            sf::Vector2f diff = playerPos - gb->getPosition();
+            float dist = std::sqrt(diff.x * diff.x + diff.y * diff.y);
+            if (dist < 0.001f) { diff = {1.f, 0.f}; dist = 1.f; }
+            sf::Vector2f normal = diff / dist;
+            m_player.applyRecoil(gb->getPosition(), 20.f);
+            // 巨型泡泡也被推开
+            gb->setPosition(gb->getPosition() - normal * 18.f);
+            m_screenShake = std::max(m_screenShake, 0.15f);
+            if (!gb->isActive()) {
+                onKill(gb->getPosition(), GiantBubble::SCORE_VALUE, gb->getColor());
+            } else {
+                spawnEffect(gb->getPosition(), sf::Color(255, 200, 150));
+                spawnFloatingText(gb->getPosition(), L"1/2", sf::Color(255, 200, 150));
             }
         }
     }
@@ -435,7 +440,7 @@ void GameState::spawnEnemy(float deltaTime) {
 
 void GameState::updateUI() {
     m_scoreText.setString(L"得分: " + std::to_wstring(m_score));
-    m_hpText.setString(L"生命: " + std::to_wstring(m_player.getHP()) + L"/" + std::to_wstring(Player::MAX_HP) +
+    m_hpText.setString(L"生命: " + std::to_wstring(m_player.getHP()) + L"/" + std::to_wstring(m_player.getMaxHP()) +
                        L"  Lv." + std::to_wstring(m_player.getLevel()));
     m_waveText.setString(L"难度: " + std::to_wstring(m_difficultyLevel));
 }

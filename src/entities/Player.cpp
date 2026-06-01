@@ -4,7 +4,7 @@
 #include <cmath>
 
 Player::Player()
-    : m_hp(MAX_HP)
+    : m_hp(m_maxHp)
     , m_invincible(false)
     , m_invincibleTimer(0.f)
     , m_blinkTimer(0.f)
@@ -16,24 +16,24 @@ Player::Player()
     m_radius = RADIUS;
     m_position = {Game::WINDOW_WIDTH / 2.f, Game::WINDOW_HEIGHT / 2.f};
 
-    // 玩家身体
+    // 玩家身体 — 泡泡质感
     m_body.setRadius(RADIUS);
     m_body.setOrigin(RADIUS, RADIUS);
-    m_body.setFillColor(sf::Color(80, 180, 255));
-    m_body.setOutlineThickness(3.f);
-    m_body.setOutlineColor(sf::Color(40, 120, 200));
+    m_body.setFillColor(sf::Color(100, 200, 255, 220));
+    m_body.setOutlineThickness(2.5f);
+    m_body.setOutlineColor(sf::Color(60, 140, 220, 200));
 
-    // 尖针 - 细长矩形
+    // 尖针 — 金属针（在身体上方渲染）
     m_needle.setSize({NEEDLE_LENGTH, NEEDLE_WIDTH});
     m_needle.setOrigin(0.f, NEEDLE_WIDTH / 2.f);
-    m_needle.setFillColor(sf::Color(200, 200, 200));
-    m_needle.setOutlineThickness(1.f);
-    m_needle.setOutlineColor(sf::Color(150, 150, 150));
+    m_needle.setFillColor(sf::Color(220, 220, 230));
+    m_needle.setOutlineThickness(1.5f);
+    m_needle.setOutlineColor(sf::Color(160, 160, 180));
 
-    // 针尖
-    m_needleTip.setRadius(4.f);
-    m_needleTip.setOrigin(4.f, 4.f);
-    m_needleTip.setFillColor(sf::Color(255, 50, 50));
+    // 针尖 — 红色三角感
+    m_needleTip.setRadius(5.f);
+    m_needleTip.setOrigin(5.f, 5.f);
+    m_needleTip.setFillColor(sf::Color(255, 60, 60));
 }
 
 void Player::update(float deltaTime) {
@@ -47,7 +47,7 @@ void Player::update(float deltaTime) {
         m_blinkTimer += deltaTime;
         if (m_invincibleTimer <= 0.f) {
             m_invincible = false;
-            m_body.setFillColor(sf::Color(80, 180, 255));
+            m_body.setFillColor(sf::Color(100, 200, 255, 220));
         }
     }
 }
@@ -128,16 +128,19 @@ void Player::render(sf::RenderWindow& window) {
     if (m_invincible) {
         float blink = std::sin(m_blinkTimer * 15.f) * 0.5f + 0.5f;
         m_body.setFillColor(sf::Color(
-            static_cast<sf::Uint8>(80 + 100 * blink),
-            static_cast<sf::Uint8>(180 + 50 * blink),
+            static_cast<sf::Uint8>(100 + 100 * blink),
+            static_cast<sf::Uint8>(200 + 40 * blink),
             static_cast<sf::Uint8>(255),
-            static_cast<sf::Uint8>(128 + 127 * blink)
+            static_cast<sf::Uint8>(100 + 155 * blink)
         ));
+    } else {
+        m_body.setFillColor(sf::Color(100, 200, 255, 220));
     }
 
+    // 先画身体，再画针（针在身体上方）
+    window.draw(m_body);
     window.draw(m_needle);
     window.draw(m_needleTip);
-    window.draw(m_body);
 }
 
 void Player::takeDamage() {
@@ -150,7 +153,7 @@ void Player::takeDamage() {
 }
 
 void Player::heal() {
-    if (m_hp < MAX_HP) {
+    if (m_hp < m_maxHp) {
         m_hp++;
     }
 }
@@ -181,6 +184,7 @@ void Player::addKill() {
     int newLevel = m_kills / KILLS_PER_LEVEL + 1;
     if (newLevel > m_level) {
         m_level = newLevel;
+        m_maxHp = BASE_MAX_HP + (m_level - 1) * HP_PER_LEVEL;  // 提高血量上限
         healFull();  // 升级回满血
     }
 }

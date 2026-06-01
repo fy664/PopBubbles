@@ -12,12 +12,13 @@ class Player : public Entity {
 public:
     static constexpr float SPEED = 350.f;
     static constexpr float RADIUS = 18.f;
-    static constexpr int MAX_HP = 5;
+    static constexpr int BASE_MAX_HP = 5;              // 初始血量
+    static constexpr int HP_PER_LEVEL = 2;             // 每级增加血量上限
     static constexpr float INVINCIBLE_TIME = 1.5f;
     static constexpr float NEEDLE_LENGTH = 55.f;      // 尖针从球心伸出总长度
     static constexpr float NEEDLE_EXTEND = 35.f;       // 戳刺时额外延伸距离
     static constexpr float NEEDLE_ATTACK_DURATION = 0.3f; // 攻击持续时间
-    static constexpr float NEEDLE_WIDTH = 5.f;         // 尖针粗细
+    static constexpr float NEEDLE_WIDTH = 7.f;         // 尖针粗细
     static constexpr int KILLS_PER_LEVEL = 10;         // 每10击杀升一级
 
     Player();
@@ -30,7 +31,7 @@ public:
 
     // 回复生命值
     void heal();
-    void healFull() { m_hp = MAX_HP; }
+    void healFull() { m_hp = m_maxHp; }
 
     // 等级系统
     void addKill();
@@ -44,7 +45,7 @@ public:
     bool isInvincible() const { return m_invincible; }
     bool isAttacking() const { return m_attacking; }
     int getHP() const { return m_hp; }
-    int getMaxHP() const { return MAX_HP; }
+    int getMaxHP() const { return m_maxHp; }
     bool isDead() const { return m_hp <= 0; }
 
     // 获取尖针尖端位置（攻击判定用）
@@ -67,6 +68,7 @@ private:
     void updateNeedle();
 
     int m_hp;
+    int m_maxHp = BASE_MAX_HP;
     int m_level = 1;
     int m_kills = 0;
     bool m_invincible;

@@ -82,7 +82,7 @@ void Game::update(float deltaTime) {
 }
 
 void Game::render() {
-    m_window.clear(sf::Color(20, 20, 40));
+    m_window.clear(sf::Color(30, 40, 70));  // 柔和深蓝背景，泡泡感
 
     if (!m_stateStack.empty()) {
         // Only render the topmost opaque state, plus any transparent ones below

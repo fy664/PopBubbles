@@ -2,11 +2,8 @@
 #include "core/State.h"
 #include "core/Button.h"
 #include <vector>
+#include <SFML/Graphics.hpp>
 
-/**
- * 主菜单状态
- * 包含"开始游戏"、"排行榜"、"退出游戏"三个按钮
- */
 class MainMenuState : public State {
 public:
     MainMenuState();
@@ -20,6 +17,14 @@ public:
 private:
     sf::Text m_titleText;
     std::vector<Button> m_buttons;
+
+    // 装饰性背景泡泡
+    struct DecoBubble {
+        sf::CircleShape shape;
+        sf::Vector2f drift;
+    };
+    std::vector<DecoBubble> m_decoBubbles;
+    void initDecoBubbles();
 
     void onStartGame();
     void onLeaderboard();
