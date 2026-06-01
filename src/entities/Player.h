@@ -4,8 +4,9 @@
 
 /**
  * 玩家类
- * WASD 控制移动，尖针始终指向鼠标方向
- * 左键点击时尖针向前伸出30像素，持续0.3秒进行戳刺攻击
+ * WASD 控制移动，一根锥形尖针从球心伸出始终指向鼠标方向
+ * 尖针整体伸缩动画：左键点击时向前延伸35像素持续0.3秒
+ * 被动碰撞：静止尖针也能戳破泡泡；攻击延伸获得更远射程
  * 受伤后1.5秒无敌时间，带闪烁效果
  */
 class Player : public Entity {
@@ -82,6 +83,5 @@ private:
     float m_needleAnimProgress; // 尖针动画进度 0~1（延伸比例）
 
     sf::CircleShape m_body;
-    sf::RectangleShape m_needle;
-    sf::CircleShape m_needleTip;
+    sf::ConvexShape m_needle;   // 锥形尖针（整体伸缩动画）
 };

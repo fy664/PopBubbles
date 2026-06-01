@@ -2,6 +2,7 @@
 #include "core/Input.h"
 #include "core/Game.h"
 #include <cmath>
+#include <algorithm>
 
 Player::Player()
     : m_hp(m_maxHp)
@@ -23,17 +24,11 @@ Player::Player()
     m_body.setOutlineThickness(2.5f);
     m_body.setOutlineColor(sf::Color(60, 140, 220, 200));
 
-    // 尖针 — 金属针（在身体上方渲染）
-    m_needle.setSize({NEEDLE_LENGTH, NEEDLE_WIDTH});
-    m_needle.setOrigin(0.f, NEEDLE_WIDTH / 2.f);
+    // 锥形尖针 — 整体伸缩（ConvexShape 4点）
+    m_needle.setPointCount(4);
     m_needle.setFillColor(sf::Color(220, 220, 230));
-    m_needle.setOutlineThickness(1.5f);
-    m_needle.setOutlineColor(sf::Color(160, 160, 180));
-
-    // 针尖 — 红色三角感
-    m_needleTip.setRadius(5.f);
-    m_needleTip.setOrigin(5.f, 5.f);
-    m_needleTip.setFillColor(sf::Color(255, 60, 60));
+    m_needle.setOutlineThickness(1.2f);
+    m_needle.setOutlineColor(sf::Color(140, 140, 160));
 }
 
 void Player::update(float deltaTime) {
@@ -114,13 +109,28 @@ void Player::updateNeedle() {
     float dy = mouseWorld.y - m_position.y;
     m_needleAngle = std::atan2(dy, dx);
 
-    // 更新尖针位置和旋转
+    // 更新锥形针的顶点 — 从球心向外延伸，整体伸缩动画
+    float len = getCurrentNeedleLength();
+    float baseW = NEEDLE_WIDTH * 0.5f;       // 根部半宽
+    float tipW = 1.5f;                        // 尖端半宽（收窄成尖）
+    float tipR = 3.f;                         // 尖端红色圆点大小
+
+    // ConvexShape 4点：根部宽 → 尖端窄，形成锥形
+    m_needle.setPoint(0, sf::Vector2f(0.f, -baseW));            // 根部上
+    m_needle.setPoint(1, sf::Vector2f(len - tipR, -tipW));      // 尖端上
+    m_needle.setPoint(2, sf::Vector2f(len, 0.f));               // 最尖端
+    m_needle.setPoint(3, sf::Vector2f(len - tipR, tipW));      // 尖端下
+    // 注意：还需要第5个点完成根部下，改为5点
+    // 重新设置点数
+    m_needle.setPointCount(5);
+    m_needle.setPoint(0, sf::Vector2f(0.f, -baseW));
+    m_needle.setPoint(1, sf::Vector2f(len - tipR, -tipW));
+    m_needle.setPoint(2, sf::Vector2f(len, 0.f));
+    m_needle.setPoint(3, sf::Vector2f(len - tipR, tipW));
+    m_needle.setPoint(4, sf::Vector2f(0.f, baseW));
+
     m_needle.setPosition(m_position);
     m_needle.setRotation(m_needleAngle * 180.f / 3.14159265f);
-
-    // 针尖位置
-    sf::Vector2f tip = getNeedleTip();
-    m_needleTip.setPosition(tip);
 }
 
 void Player::render(sf::RenderWindow& window) {
@@ -137,10 +147,9 @@ void Player::render(sf::RenderWindow& window) {
         m_body.setFillColor(sf::Color(100, 200, 255, 220));
     }
 
-    // 先画身体，再画针（针在身体上方）
+    // 先画身体，再画锥形针（整体伸缩，针在身体上方）
     window.draw(m_body);
     window.draw(m_needle);
-    window.draw(m_needleTip);
 }
 
 void Player::takeDamage() {
@@ -185,7 +194,7 @@ void Player::addKill() {
     if (newLevel > m_level) {
         m_level = newLevel;
         m_maxHp = BASE_MAX_HP + (m_level - 1) * HP_PER_LEVEL;  // 提高血量上限
-        healFull();  // 升级回满血
+        m_hp = std::min(m_hp + 2, m_maxHp);                    // 升级回复2滴血
     }
 }
 
