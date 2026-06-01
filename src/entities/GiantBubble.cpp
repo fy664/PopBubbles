@@ -21,6 +21,8 @@ GiantBubble::GiantBubble()
 void GiantBubble::update(float deltaTime) {
     if (!m_active) return;
 
+    updateCooldown(deltaTime);  // 必须调用，否则 hit cooldown 永不过期
+
     // 冷却时间更新
     if (m_cooldownTimer > 0.f) {
         m_cooldownTimer -= deltaTime;

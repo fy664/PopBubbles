@@ -7,21 +7,40 @@
 #include <sstream>
 #include <iomanip>
 
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
 using json = nlohmann::json;
 
 std::string Leaderboard::getFilePath() {
-    // 排行榜文件存储在可执行文件所在目录
-    return FILENAME;
+    // 排行榜文件存储在可执行文件所在目录（而非工作目录）
+    static std::string path;
+    if (!path.empty()) return path;
+
+#ifdef _WIN32
+    char exePath[MAX_PATH];
+    GetModuleFileNameA(NULL, exePath, MAX_PATH);
+    std::string exeDir(exePath);
+    exeDir = exeDir.substr(0, exeDir.find_last_of("\\/") + 1);
+    path = exeDir + FILENAME;
+#else
+    path = std::string("./") + FILENAME;
+#endif
+    return path;
 }
 
 std::vector<Leaderboard::Entry> Leaderboard::load() {
     std::vector<Entry> entries;
 
-    std::ifstream file(getFilePath());
+    std::string fpath = getFilePath();
+    std::ifstream file(fpath);
     if (!file.is_open()) {
         // 文件不存在则返回空列表
+        std::cout << "[Leaderboard] No existing file at " << fpath << std::endl;
         return entries;
     }
+    std::cout << "[Leaderboard] Loaded from " << fpath << std::endl;
 
     try {
         json data = json::parse(file);

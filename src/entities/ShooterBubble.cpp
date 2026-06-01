@@ -17,6 +17,8 @@ ShooterBubble::ShooterBubble()
 void ShooterBubble::update(float deltaTime) {
     if (!m_active) return;
 
+    updateCooldown(deltaTime);  // 必须调用，否则 hit cooldown 永不过期
+
     m_shootTimer += deltaTime;
 
     // 与玩家的距离
