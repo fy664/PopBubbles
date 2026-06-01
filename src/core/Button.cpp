@@ -8,6 +8,7 @@ Button::Button()
     , m_colorClicked(sf::Color(50, 50, 150)) {
 
     m_shape.setSize({200.f, 50.f});
+    m_shape.setOrigin(100.f, 25.f);  // center origin for uniform scaling
     m_shape.setFillColor(m_colorNormal);
     m_shape.setOutlineThickness(2.f);
     m_shape.setOutlineColor(sf::Color::White);
@@ -50,18 +51,16 @@ void Button::setCharacterSize(unsigned int size) {
 }
 
 void Button::setPosition(sf::Vector2f position) {
+    // position is the center of the button (origin is at center)
     m_shape.setPosition(position);
-    // Center text in button
-    sf::Vector2f shapeSize = m_shape.getSize();
-    m_text.setPosition(position.x + shapeSize.x / 2.f,
-                       position.y + shapeSize.y / 2.f);
+    m_text.setPosition(position);
 }
 
 void Button::setSize(sf::Vector2f size) {
     m_shape.setSize(size);
-    // Re-center text
-    m_text.setPosition(m_shape.getPosition().x + size.x / 2.f,
-                       m_shape.getPosition().y + size.y / 2.f);
+    m_shape.setOrigin(size.x / 2.f, size.y / 2.f);  // keep origin at center
+    // Text stays at shape center (same position)
+    m_text.setPosition(m_shape.getPosition());
 }
 
 void Button::setColors(sf::Color normal, sf::Color hovered, sf::Color clicked) {
