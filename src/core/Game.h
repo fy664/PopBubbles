@@ -12,7 +12,6 @@ class Game {
 public:
     static constexpr unsigned int WINDOW_WIDTH = 1024;
     static constexpr unsigned int WINDOW_HEIGHT = 768;
-    static constexpr const char* WINDOW_TITLE = "Pop Bubbles - 戳泡泡";
 
     Game();
     ~Game();

@@ -17,7 +17,7 @@ Game::~Game() {
 
 bool Game::init() {
     m_window.create(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT),
-                    WINDOW_TITLE, sf::Style::Titlebar | sf::Style::Close);
+                    L"Pop Bubbles - 戳泡泡", sf::Style::Titlebar | sf::Style::Close);
     m_window.setFramerateLimit(60);
     m_window.setVerticalSyncEnabled(false);
 
