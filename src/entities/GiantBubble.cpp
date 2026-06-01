@@ -71,6 +71,9 @@ void GiantBubble::render(sf::RenderWindow& window) {
 }
 
 void GiantBubble::takeDamage() {
+    if (!canBeHit()) return;
+    markHit(0.35f);
+
     m_hp--;
     if (m_hp <= 0) {
         m_active = false;

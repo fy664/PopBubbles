@@ -41,6 +41,9 @@ void Bubble::initShape() {
 void Bubble::update(float deltaTime) {
     if (!m_active) return;
 
+    // Update hit cooldown
+    updateCooldown(deltaTime);
+
     // 向目标（玩家）移动
     sf::Vector2f dir = directionTo(m_target);
     float speed = BASE_SPEED;
@@ -48,8 +51,6 @@ void Bubble::update(float deltaTime) {
     m_position.x += dir.x * speed * deltaTime;
     m_position.y += dir.y * speed * deltaTime;
 
-    // 不要将普通泡泡clamp到屏幕内——它们可以在屏幕边缘外生成并移入
-    // 只更新 shape 位置
     m_shape.setPosition(m_position);
 }
 

@@ -24,7 +24,6 @@ public:
 
     // 获取玩家位置（供泡泡AI使用）
     sf::Vector2f getPlayerPosition() const;
-
 private:
     void spawnEnemy(float deltaTime);
     void updateEnemies(float deltaTime);
@@ -32,6 +31,7 @@ private:
     void updateBullets(float deltaTime);
     void updateUI();
     void spawnEffect(sf::Vector2f position, sf::Color color);
+    void spawnFloatingText(sf::Vector2f position, const std::wstring& text, sf::Color color);
 
     // 实体
     Player m_player;
@@ -60,6 +60,19 @@ private:
         float maxLifetime;
     };
     std::vector<Particle> m_particles;
+
+    // 浮动分数文字
+    struct FloatingText {
+        sf::Text text;
+        float lifetime;
+        float maxLifetime;
+    };
+    std::vector<FloatingText> m_floatingTexts;
+
+    // 击杀连击
+    int m_killStreak = 0;
+    float m_streakTimer = 0.f;
+    static constexpr float STREAK_WINDOW = 1.0f;
 
     // 屏幕震动
     float m_screenShake;

@@ -68,9 +68,12 @@ void MainMenuState::onEnter() {
 void MainMenuState::handleInput(sf::RenderWindow& window) {
     sf::Vector2f mousePos = Input::getMouseWorld(window);
 
-    for (auto& btn : m_buttons) {
-        if (Input::isMousePressed(sf::Mouse::Left)) {
-            btn.handleClick(mousePos);
+    if (Input::isMousePressed(sf::Mouse::Left)) {
+        for (auto& btn : m_buttons) {
+            if (btn.contains(mousePos)) {
+                btn.handleClick(mousePos);
+                return;  // State may have changed, stop processing
+            }
         }
     }
 }

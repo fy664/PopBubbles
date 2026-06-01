@@ -39,12 +39,14 @@ LeaderboardState::LeaderboardState() {
 void LeaderboardState::handleInput(sf::RenderWindow& window) {
     sf::Vector2f mousePos = Input::getMouseWorld(window);
 
-    if (Input::isMousePressed(sf::Mouse::Left)) {
+    if (Input::isMousePressed(sf::Mouse::Left) && m_backBtn.contains(mousePos)) {
         m_backBtn.handleClick(mousePos);
+        return;
     }
 
     if (Input::isKeyPressed(sf::Keyboard::Escape)) {
         onBack();
+        return;
     }
 }
 

@@ -1,5 +1,6 @@
 #include "core/Button.h"
 #include "core/Input.h"
+#include "core/Audio.h"
 
 Button::Button()
     : m_state(State::Normal)
@@ -85,6 +86,7 @@ void Button::update(sf::Vector2f mousePos) {
     bool hovering = contains(mousePos);
     bool clicking = hovering && sf::Mouse::isButtonPressed(sf::Mouse::Left);
 
+    State prev = m_state;
     if (clicking) {
         m_state = State::Clicked;
     } else if (hovering) {
@@ -92,10 +94,16 @@ void Button::update(sf::Vector2f mousePos) {
     } else {
         m_state = State::Normal;
     }
+
+    // Play hover sound on state transition
+    if (prev != State::Hovered && m_state == State::Hovered) {
+        Audio::getInstance().playButtonHover();
+    }
 }
 
 void Button::handleClick(sf::Vector2f mousePos) {
     if (contains(mousePos) && m_callback) {
+        Audio::getInstance().playButtonClick();
         m_callback();
     }
 }

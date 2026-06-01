@@ -3,6 +3,7 @@
 #include "core/Game.h"
 #include "core/ResourceManager.h"
 #include "core/Input.h"
+#include "core/Audio.h"
 #include "entities/Collision.h"
 #include <random>
 #include <cmath>
@@ -96,7 +97,8 @@ void GameState::update(float deltaTime) {
 
     // 玩家死亡检测
     if (m_player.isDead()) {
-        // 切换到游戏结束状态（传递分数）
+        Audio::getInstance().playGameOver();
+        Audio::getInstance().stopMusic();
         auto gameOverState = std::make_unique<GameOverState>();
         gameOverState->setScore(m_score);
         Game::instance->changeState(std::move(gameOverState));
@@ -133,6 +135,28 @@ void GameState::update(float deltaTime) {
         } else {
             ++it;
         }
+    }
+
+    // Update floating texts
+    for (auto it = m_floatingTexts.begin(); it != m_floatingTexts.end();) {
+        it->lifetime -= deltaTime;
+        it->text.move(0.f, -60.f * deltaTime);  // Float upward
+        float alpha = it->lifetime / it->maxLifetime;
+        sf::Color c = it->text.getFillColor();
+        c.a = static_cast<sf::Uint8>(255 * alpha);
+        it->text.setFillColor(c);
+
+        if (it->lifetime <= 0.f) {
+            it = m_floatingTexts.erase(it);
+        } else {
+            ++it;
+        }
+    }
+
+    // Kill streak timer
+    m_streakTimer -= deltaTime;
+    if (m_streakTimer <= 0.f) {
+        m_killStreak = 0;
     }
 
     // 屏幕震动衰减
@@ -173,6 +197,7 @@ void GameState::updateEnemies(float deltaTime) {
             if (bullet) {
                 sf::Vector2f dir = sb->directionTo(playerPos);
                 bullet->fire(sb->getPosition(), dir);
+                Audio::getInstance().playShoot();
             }
             sb->resetShootTimer();
         }
@@ -212,40 +237,55 @@ void GameState::checkCollisions() {
     if (m_player.isAttacking()) {
         auto [needleStart, needleEnd] = m_player.getNeedleLine();
 
+        auto onKill = [this](sf::Vector2f pos, int score, sf::Color color) {
+            m_killStreak++;
+            m_streakTimer = STREAK_WINDOW;
+            int bonusScore = score;
+            std::wstring text = L"+" + std::to_wstring(score);
+            if (m_killStreak >= 5) {
+                bonusScore += m_killStreak * 2;  // Streak bonus
+                text = L"+" + std::to_wstring(score) + L" x" + std::to_wstring(m_killStreak) + L"!";
+            }
+            m_score += bonusScore;
+            spawnEffect(pos, color);
+            spawnFloatingText(pos + sf::Vector2f(0.f, -20.f), text,
+                              m_killStreak >= 3 ? sf::Color(255, 255, 100) : sf::Color::White);
+            Audio::getInstance().playBubblePop();
+        };
+
         // 检查普通泡泡
         for (auto& bubble : m_bubbles) {
-            if (!bubble->isActive()) continue;
+            if (!bubble->isActive() || !bubble->canBeHit()) continue;
             if (Collision::lineCircle(needleStart, needleEnd,
                                        bubble->getPosition(), bubble->getRadius())) {
-                m_score += bubble->getScoreValue();
-                spawnEffect(bubble->getPosition(), bubble->getColor());
+                bubble->markHit();
+                onKill(bubble->getPosition(), bubble->getScoreValue(), bubble->getColor());
                 bubble->setActive(false);
             }
         }
 
         // 检查射手泡泡
         for (auto& sb : m_shooterBubbles) {
-            if (!sb->isActive()) continue;
+            if (!sb->isActive() || !sb->canBeHit()) continue;
             if (Collision::lineCircle(needleStart, needleEnd,
                                        sb->getPosition(), sb->getRadius())) {
-                m_score += ShooterBubble::SCORE_VALUE;
-                spawnEffect(sb->getPosition(), sb->getColor());
+                sb->markHit();
+                onKill(sb->getPosition(), ShooterBubble::SCORE_VALUE, sb->getColor());
                 sb->setActive(false);
             }
         }
 
         // 检查巨型泡泡
         for (auto& gb : m_giantBubbles) {
-            if (!gb->isActive()) continue;
+            if (!gb->isActive() || !gb->canBeHit()) continue;
             if (Collision::lineCircle(needleStart, needleEnd,
                                        gb->getPosition(), gb->getRadius())) {
                 gb->takeDamage();
                 if (!gb->isActive()) {
-                    m_score += GiantBubble::SCORE_VALUE;
-                    spawnEffect(gb->getPosition(), gb->getColor());
+                    onKill(gb->getPosition(), GiantBubble::SCORE_VALUE, gb->getColor());
                 } else {
-                    // 受伤效果
                     spawnEffect(gb->getPosition(), sf::Color(255, 200, 150));
+                    spawnFloatingText(gb->getPosition(), L"1/2", sf::Color(255, 200, 150));
                 }
             }
         }
@@ -253,15 +293,20 @@ void GameState::checkCollisions() {
 
     // 泡泡与玩家碰撞检测
     if (!m_player.isInvincible()) {
+        auto damagePlayer = [this](sf::Vector2f pos, sf::Color color, float shake) {
+            m_player.takeDamage();
+            Audio::getInstance().playPlayerHurt();
+            spawnEffect(pos, color);
+            m_screenShake = shake;
+        };
+
         for (auto& bubble : m_bubbles) {
             if (!bubble->isActive()) continue;
             if (Collision::circleCircle(playerPos, playerRadius,
                                          bubble->getPosition(), bubble->getRadius())) {
-                m_player.takeDamage();
-                spawnEffect(bubble->getPosition(), bubble->getColor());
+                damagePlayer(bubble->getPosition(), bubble->getColor(), 0.2f);
                 bubble->setActive(false);
-                m_screenShake = 0.2f;
-                break; // 一次只受一个泡泡伤害
+                break;
             }
         }
 
@@ -269,10 +314,8 @@ void GameState::checkCollisions() {
             if (!sb->isActive()) continue;
             if (Collision::circleCircle(playerPos, playerRadius,
                                          sb->getPosition(), sb->getRadius())) {
-                m_player.takeDamage();
-                spawnEffect(sb->getPosition(), sb->getColor());
+                damagePlayer(sb->getPosition(), sb->getColor(), 0.2f);
                 sb->setActive(false);
-                m_screenShake = 0.2f;
                 break;
             }
         }
@@ -281,10 +324,8 @@ void GameState::checkCollisions() {
             if (!gb->isActive()) continue;
             if (Collision::circleCircle(playerPos, playerRadius,
                                          gb->getPosition(), gb->getRadius())) {
-                m_player.takeDamage();
-                spawnEffect(gb->getPosition(), gb->getColor());
+                damagePlayer(gb->getPosition(), gb->getColor(), 0.3f);
                 gb->setActive(false);
-                m_screenShake = 0.3f;
                 break;
             }
         }
@@ -298,6 +339,7 @@ void GameState::checkCollisions() {
             if (Collision::circleCircle(playerPos, playerRadius,
                                          bullet->getPosition(), bullet->getRadius())) {
                 m_player.takeDamage();
+                Audio::getInstance().playPlayerHurt();
                 spawnEffect(bullet->getPosition(), sf::Color(200, 50, 200));
                 bullet->deactivate();
                 m_screenShake = 0.15f;
@@ -368,6 +410,11 @@ void GameState::render(sf::RenderWindow& window) {
         window.draw(p.shape);
     }
 
+    // 渲染浮动文字
+    for (const auto& ft : m_floatingTexts) {
+        window.draw(ft.text);
+    }
+
     // 渲染普通泡泡
     for (auto& b : m_bubbles) {
         b->render(window);
@@ -421,4 +468,16 @@ void GameState::spawnEffect(sf::Vector2f position, sf::Color color) {
 
         m_particles.push_back(p);
     }
+}
+
+void GameState::spawnFloatingText(sf::Vector2f position, const std::wstring& text, sf::Color color) {
+    FloatingText ft;
+    ft.text.setFont(ResourceManager::getInstance().getFont("default"));
+    ft.text.setString(text);
+    ft.text.setCharacterSize(20);
+    ft.text.setFillColor(color);
+    ft.text.setPosition(position);
+    ft.lifetime = 0.8f;
+    ft.maxLifetime = 0.8f;
+    m_floatingTexts.push_back(ft);
 }

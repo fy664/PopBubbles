@@ -69,13 +69,15 @@ void GameOverState::handleInput(sf::RenderWindow& window) {
     if (!m_submitted) {
         m_nameInput.handleKeyInput();
 
-        if (Input::isMousePressed(sf::Mouse::Left)) {
+        if (Input::isMousePressed(sf::Mouse::Left) && m_submitBtn.contains(mousePos)) {
             m_submitBtn.handleClick(mousePos);
+            return;
         }
     }
 
-    if (Input::isMousePressed(sf::Mouse::Left)) {
+    if (Input::isMousePressed(sf::Mouse::Left) && m_returnBtn.contains(mousePos)) {
         m_returnBtn.handleClick(mousePos);
+        return;
     }
 }
 

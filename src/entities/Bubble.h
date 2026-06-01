@@ -34,11 +34,17 @@ public:
     // 刷新外观（颜色变化等）
     void refreshAppearance();
 
+    // Hit cooldown to prevent multi-hit in one attack cycle
+    bool canBeHit() const { return m_hitCooldown <= 0.f; }
+    void markHit(float cooldown = 0.35f) { m_hitCooldown = cooldown; }
+    void updateCooldown(float dt) { if (m_hitCooldown > 0.f) m_hitCooldown -= dt; }
+
 protected:
     Type m_type;
     sf::Color m_color;
     sf::CircleShape m_shape;
     sf::Vector2f m_target;
+    float m_hitCooldown = 0.f;
 
     void initShape();
 };

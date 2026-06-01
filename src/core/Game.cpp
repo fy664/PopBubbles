@@ -1,6 +1,7 @@
 #include "core/Game.h"
 #include "core/ResourceManager.h"
 #include "core/Input.h"
+#include "core/Audio.h"
 #include <iostream>
 
 Game* Game::instance = nullptr;
@@ -22,6 +23,10 @@ bool Game::init() {
     m_window.setVerticalSyncEnabled(false);
 
     auto& rm = ResourceManager::getInstance();
+
+    // Initialize audio system (will run silently if no sound files found)
+    Audio::getInstance().loadAll();
+    Audio::getInstance().playMusic();
 
     std::cout << "[Game] Initialized: " << WINDOW_WIDTH << "x" << WINDOW_HEIGHT << std::endl;
     return true;
