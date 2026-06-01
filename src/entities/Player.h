@@ -15,7 +15,7 @@ public:
     static constexpr float RADIUS = 18.f;
     static constexpr int BASE_MAX_HP = 5;              // 初始血量
     static constexpr int HP_PER_LEVEL = 2;             // 每级增加血量上限
-    static constexpr float INVINCIBLE_TIME = 1.5f;
+    static constexpr float INVINCIBLE_TIME = 0.75f;
     static constexpr float NEEDLE_LENGTH = 55.f;      // 尖针从球心伸出总长度
     static constexpr float NEEDLE_EXTEND = 35.f;       // 戳刺时额外延伸距离
     static constexpr float NEEDLE_ATTACK_DURATION = 0.3f; // 攻击持续时间
@@ -27,8 +27,8 @@ public:
     void update(float deltaTime) override;
     void render(sf::RenderWindow& window) override;
 
-    // 受伤
-    void takeDamage();
+    // 受伤（amount 默认为1）
+    void takeDamage(int amount = 1);
 
     // 回复生命值
     void heal();

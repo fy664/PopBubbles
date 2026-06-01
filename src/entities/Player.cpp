@@ -17,12 +17,12 @@ Player::Player()
     m_radius = RADIUS;
     m_position = {Game::WINDOW_WIDTH / 2.f, Game::WINDOW_HEIGHT / 2.f};
 
-    // 玩家身体 — 半透明泡泡（针从内部伸出可见）
+    // 玩家身体 — 泡泡质感
     m_body.setRadius(RADIUS);
     m_body.setOrigin(RADIUS, RADIUS);
-    m_body.setFillColor(sf::Color(100, 200, 255, 150));
+    m_body.setFillColor(sf::Color(100, 200, 255, 220));
     m_body.setOutlineThickness(2.5f);
-    m_body.setOutlineColor(sf::Color(60, 140, 220, 180));
+    m_body.setOutlineColor(sf::Color(60, 140, 220, 200));
 
     // 锥形尖针 — 整体伸缩（ConvexShape 4点）
     m_needle.setPointCount(4);
@@ -42,7 +42,7 @@ void Player::update(float deltaTime) {
         m_blinkTimer += deltaTime;
         if (m_invincibleTimer <= 0.f) {
             m_invincible = false;
-            m_body.setFillColor(sf::Color(100, 200, 255, 150));
+            m_body.setFillColor(sf::Color(100, 200, 255, 220));
         }
     }
 }
@@ -144,7 +144,7 @@ void Player::render(sf::RenderWindow& window) {
             static_cast<sf::Uint8>(100 + 155 * blink)
         ));
     } else {
-        m_body.setFillColor(sf::Color(100, 200, 255, 150));
+        m_body.setFillColor(sf::Color(100, 200, 255, 220));
     }
 
     // 先画针（在身体下层），再画半透明身体覆盖针根，针尖伸出体外
@@ -152,10 +152,10 @@ void Player::render(sf::RenderWindow& window) {
     window.draw(m_body);
 }
 
-void Player::takeDamage() {
+void Player::takeDamage(int amount) {
     if (m_invincible) return;
 
-    m_hp--;
+    m_hp -= amount;
     m_invincible = true;
     m_invincibleTimer = INVINCIBLE_TIME;
     m_blinkTimer = 0.f;
@@ -194,7 +194,7 @@ void Player::addKill() {
     if (newLevel > m_level) {
         m_level = newLevel;
         m_maxHp = BASE_MAX_HP + (m_level - 1) * HP_PER_LEVEL;  // 提高血量上限
-        m_hp = std::min(m_hp + 4, m_maxHp);                    // 升级回复4滴血
+        m_hp = std::min(m_hp + 3, m_maxHp);                    // 升级回复3滴血
     }
 }
 

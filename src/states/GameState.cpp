@@ -302,8 +302,8 @@ void GameState::checkCollisions() {
 
     // 泡泡与玩家碰撞检测
     if (!m_player.isInvincible()) {
-        auto damagePlayer = [this](sf::Vector2f pos, sf::Color color, float shake) {
-            m_player.takeDamage();
+        auto damagePlayer = [this](sf::Vector2f pos, sf::Color color, float shake, int dmg = 1) {
+            m_player.takeDamage(dmg);
             Audio::getInstance().playPlayerHurt();
             spawnEffect(pos, color);
             m_screenShake = shake;
@@ -333,7 +333,7 @@ void GameState::checkCollisions() {
             if (!gb->isActive()) continue;
             if (Collision::circleCircle(playerPos, playerRadius,
                                          gb->getPosition(), gb->getRadius())) {
-                damagePlayer(gb->getPosition(), gb->getColor(), 0.3f);
+                damagePlayer(gb->getPosition(), gb->getColor(), 0.3f, 2);  // 巨型泡泡造成2点伤害
                 gb->setActive(false);
                 break;
             }
