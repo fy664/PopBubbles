@@ -1,0 +1,28 @@
+# Build output
+build/
+
+# IDE
+.vs/
+*.user
+*.suo
+
+# OS
+Thumbs.db
+Desktop.ini
+
+# Binary assets (keep small, exclude large)
+*.dll
+*.exe
+*.pdb
+*.lib
+*.exp
+
+# Temporary
+/tmp/
+*.tmp
+
+# Leaderboard (generated at runtime)
+leaderboard.json
+
+# vcpkg
+vcpkg_installed/

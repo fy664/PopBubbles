@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//c/msys64/mingw64/bin/**)",
+      "Read(//c/msys64/mingw64/include/**)"
+    ]
+  }
+}

@@ -1,0 +1,46 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "CMake Configure + Build",
+            "type": "shell",
+            "command": "cmd",
+            "args": [
+                "/c",
+                "d:\\Desktop\\PopBubbles\\build_vs.bat"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": ["$msCompile"]
+        },
+        {
+            "label": "CMake Build Only",
+            "type": "shell",
+            "command": "cmd",
+            "args": [
+                "/c",
+                "call \"D:\\Microsoft Visual Studio\\18\\Community\\VC\\Auxiliary\\Build\\vcvars64.bat\" && cmake --build build --config Debug"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "problemMatcher": ["$msCompile"]
+        },
+        {
+            "label": "CMake Clean Rebuild",
+            "type": "shell",
+            "command": "cmd",
+            "args": [
+                "/c",
+                "call \"D:\\Microsoft Visual Studio\\18\\Community\\VC\\Auxiliary\\Build\\vcvars64.bat\" && rmdir /s /q build && cmake -B build -G \"Visual Studio 18 2026\" && cmake --build build --config Debug"
+            ],
+            "group": {
+                "kind": "build"
+            },
+            "problemMatcher": ["$msCompile"]
+        }
+    ]
+}
