@@ -7,6 +7,7 @@
 #include "core/Input.h"
 #include <random>
 #include <cmath>
+#include <iostream>
 
 MainMenuState::MainMenuState() {
     auto& font = ResourceManager::getInstance().getFont("default");
@@ -77,10 +78,12 @@ void MainMenuState::handleInput(sf::RenderWindow& window) {
     sf::Vector2f mousePos = Input::getMouseWorld(window);
 
     if (Input::isMousePressed(sf::Mouse::Left)) {
-        for (auto& btn : m_buttons) {
-            if (btn.contains(mousePos)) {
-                btn.handleClick(mousePos);
-                return;  // State may have changed, stop processing
+        std::cout << "[MainMenu] Click at (" << mousePos.x << "," << mousePos.y << ")" << std::endl;
+        for (size_t i = 0; i < m_buttons.size(); ++i) {
+            if (m_buttons[i].contains(mousePos)) {
+                std::cout << "[MainMenu] Button " << i << " clicked" << std::endl;
+                m_buttons[i].handleClick(mousePos);
+                return;
             }
         }
     }
@@ -153,14 +156,17 @@ void MainMenuState::initDecoBubbles() {
 }
 
 void MainMenuState::onStartGame() {
+    std::cout << "[MainMenu] Start Game clicked" << std::endl;
     Game::instance->changeState(std::make_unique<GameState>());
 }
 
 void MainMenuState::onLeaderboard() {
+    std::cout << "[MainMenu] Leaderboard clicked" << std::endl;
     Game::instance->pushState(std::make_unique<LeaderboardState>());
 }
 
 void MainMenuState::onTutorial() {
+    std::cout << "[MainMenu] Tutorial clicked" << std::endl;
     Game::instance->pushState(std::make_unique<TutorialState>());
 }
 
