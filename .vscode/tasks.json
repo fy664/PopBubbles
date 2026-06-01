@@ -13,7 +13,9 @@
                 "kind": "build",
                 "isDefault": true
             },
-            "problemMatcher": ["$msCompile"]
+            "problemMatcher": [
+                "$msCompile"
+            ]
         },
         {
             "label": "CMake Build Only",
@@ -27,7 +29,9 @@
                 "kind": "build",
                 "isDefault": false
             },
-            "problemMatcher": ["$msCompile"]
+            "problemMatcher": [
+                "$msCompile"
+            ]
         },
         {
             "label": "CMake Clean Rebuild",
@@ -40,7 +44,16 @@
             "group": {
                 "kind": "build"
             },
-            "problemMatcher": ["$msCompile"]
+            "problemMatcher": [
+                "$msCompile"
+            ]
+        },
+        {
+            "type": "cmake",
+            "label": "CMake: 安装",
+            "command": "install",
+            "problemMatcher": [],
+            "detail": "CMake 模板 安装 任务"
         }
     ]
 }
