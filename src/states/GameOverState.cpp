@@ -42,7 +42,7 @@ GameOverState::GameOverState()
 
     // 提交按钮
     m_submitBtn = Button(L"提交成绩", font, 24,
-                         sf::Vector2f(Game::WINDOW_WIDTH / 2.f - 120.f, 285.f),
+                         sf::Vector2f(Game::WINDOW_WIDTH / 2.f, 285.f),
                          sf::Vector2f(240.f, 45.f));
     m_submitBtn.setColors(sf::Color(40, 120, 40), sf::Color(50, 160, 50), sf::Color(30, 80, 30));
     m_submitBtn.setTextColor(sf::Color::White);
@@ -50,7 +50,7 @@ GameOverState::GameOverState()
 
     // 返回主菜单按钮
     m_returnBtn = Button(L"返回主菜单", font, 24,
-                         sf::Vector2f(Game::WINDOW_WIDTH / 2.f - 120.f, 420.f),
+                         sf::Vector2f(Game::WINDOW_WIDTH / 2.f, 420.f),
                          sf::Vector2f(240.f, 45.f));
     m_returnBtn.setColors(sf::Color(100, 60, 30), sf::Color(140, 80, 40), sf::Color(70, 40, 20));
     m_returnBtn.setTextColor(sf::Color::White);

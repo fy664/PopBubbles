@@ -27,7 +27,7 @@ LeaderboardState::LeaderboardState() {
     m_emptyText.setPosition(Game::WINDOW_WIDTH / 2.f, 200.f);
 
     m_backBtn = Button(L"返回", font, 24,
-                       sf::Vector2f(Game::WINDOW_WIDTH / 2.f - 100.f, Game::WINDOW_HEIGHT - 80.f),
+                       sf::Vector2f(Game::WINDOW_WIDTH / 2.f, Game::WINDOW_HEIGHT - 80.f),
                        sf::Vector2f(200.f, 50.f));
     m_backBtn.setColors(sf::Color(80, 80, 80), sf::Color(110, 110, 110), sf::Color(50, 50, 50));
     m_backBtn.setTextColor(sf::Color::White);
