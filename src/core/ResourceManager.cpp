@@ -43,13 +43,16 @@ sf::Font& ResourceManager::getFont(const std::string& key) {
     static bool triedLoad = false;
     if (!triedLoad) {
         triedLoad = true;
-        // 尝试常见系统字体路径
-        if (fallback.loadFromFile("C:/Windows/Fonts/msyh.ttc") ||     // 微软雅黑（支持中文）
-            fallback.loadFromFile("C:/Windows/Fonts/simhei.ttf") ||   // 黑体
+        // 尝试常见系统字体路径（优先TTF中文支持字体，SFML对TTC支持有限）
+        if (fallback.loadFromFile("C:/Windows/Fonts/simhei.ttf") ||   // 黑体(TTF, 支持中文)
+            fallback.loadFromFile("C:/Windows/Fonts/simfang.ttf") ||  // 仿宋(TTF, 支持中文)
+            fallback.loadFromFile("C:/Windows/Fonts/msyh.ttc") ||     // 微软雅黑(TTC, SFML可能不支持)
             fallback.loadFromFile("C:/Windows/Fonts/arial.ttf") ||
             fallback.loadFromFile("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf") ||
             fallback.loadFromFile("/System/Library/Fonts/Helvetica.ttc")) {
             std::cout << "[ResourceManager] Loaded fallback system font" << std::endl;
+        } else {
+            std::cerr << "[ResourceManager] WARNING: No system font loaded! Chinese text may not display." << std::endl;
         }
     }
     return fallback;

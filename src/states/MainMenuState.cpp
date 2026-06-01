@@ -11,7 +11,7 @@ MainMenuState::MainMenuState() {
 
     // 标题文字
     m_titleText.setFont(font);
-    m_titleText.setString("Pop Bubbles - 戳泡泡");
+    m_titleText.setString(L"Pop Bubbles - 戳泡泡");
     m_titleText.setCharacterSize(48);
     m_titleText.setFillColor(sf::Color(255, 220, 100));
     sf::FloatRect titleBounds = m_titleText.getLocalBounds();
@@ -25,7 +25,7 @@ MainMenuState::MainMenuState() {
     float spacing = 80.f;
 
     // 开始游戏按钮
-    Button startBtn("开始游戏", font, 28,
+    Button startBtn(L"开始游戏", font, 28,
                     sf::Vector2f(centerX - 120.f, startY),
                     sf::Vector2f(240.f, 60.f));
     startBtn.setColors(sf::Color(40, 120, 40), sf::Color(50, 160, 50), sf::Color(30, 80, 30));
@@ -34,7 +34,7 @@ MainMenuState::MainMenuState() {
     m_buttons.push_back(std::move(startBtn));
 
     // 新手教程按钮
-    Button tutorialBtn("新手教程", font, 28,
+    Button tutorialBtn(L"新手教程", font, 28,
                        sf::Vector2f(centerX - 120.f, startY + spacing),
                        sf::Vector2f(240.f, 60.f));
     tutorialBtn.setColors(sf::Color(40, 80, 140), sf::Color(50, 100, 180), sf::Color(30, 60, 100));
@@ -43,7 +43,7 @@ MainMenuState::MainMenuState() {
     m_buttons.push_back(std::move(tutorialBtn));
 
     // 排行榜按钮
-    Button leaderBtn("排行榜", font, 28,
+    Button leaderBtn(L"排行榜", font, 28,
                      sf::Vector2f(centerX - 120.f, startY + spacing * 2.f),
                      sf::Vector2f(240.f, 60.f));
     leaderBtn.setColors(sf::Color(80, 60, 20), sf::Color(120, 80, 30), sf::Color(60, 40, 15));
@@ -52,7 +52,7 @@ MainMenuState::MainMenuState() {
     m_buttons.push_back(std::move(leaderBtn));
 
     // 退出按钮
-    Button quitBtn("退出游戏", font, 28,
+    Button quitBtn(L"退出游戏", font, 28,
                    sf::Vector2f(centerX - 120.f, startY + spacing * 3.f),
                    sf::Vector2f(240.f, 60.f));
     quitBtn.setColors(sf::Color(140, 40, 40), sf::Color(180, 50, 50), sf::Color(90, 30, 30));

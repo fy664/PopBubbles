@@ -97,20 +97,20 @@ void TutorialState::render(sf::RenderWindow& window) {
 }
 
 void TutorialState::nextStep() {
-    m_stepIndicator.setString("步骤 " + std::to_string(m_currentStep + 1) + " / 4");
+    m_stepIndicator.setString(L"步骤 " + std::to_wstring(m_currentStep + 1) + L" / 4");
 
     switch (m_currentStep) {
         case 0: // 移动控制
-            m_titleText.setString("移动控制");
+            m_titleText.setString(L"移动控制");
             m_contentText.setString(
-                "使用 W/A/S/D 键控制角色在屏幕中移动\n\n"
-                "W - 向上移动\n"
-                "A - 向左移动\n"
-                "S - 向下移动\n"
-                "D - 向右移动\n\n"
-                "角色不能移出屏幕边界"
+                L"使用 W/A/S/D 键控制角色在屏幕中移动\n\n"
+                L"W - 向上移动\n"
+                L"A - 向左移动\n"
+                L"S - 向下移动\n"
+                L"D - 向右移动\n\n"
+                L"角色不能移出屏幕边界"
             );
-            m_hintText.setString("按 空格键 继续");
+            m_hintText.setString(L"按 空格键 继续");
             // 居中标题
             {
                 auto bounds = m_titleText.getLocalBounds();
@@ -119,16 +119,16 @@ void TutorialState::nextStep() {
             break;
 
         case 1: // 攻击方式
-            m_titleText.setString("攻击方式 - 尖针戳刺");
+            m_titleText.setString(L"攻击方式 - 尖针戳刺");
             m_contentText.setString(
-                "玩家手持一根尖针，尖针始终指向鼠标方向\n\n"
-                "点击 鼠标左键 时，尖针向前快速伸出\n"
-                "持续 0.3 秒后收回\n\n"
-                "尖针碰到泡泡即可将其戳破！\n"
-                "注意：这不是发射子弹，而是近战攻击\n\n"
-                "提示：移动鼠标瞄准，左键点击戳刺"
+                L"玩家手持一根尖针，尖针始终指向鼠标方向\n\n"
+                L"点击 鼠标左键 时，尖针向前快速伸出\n"
+                L"持续 0.3 秒后收回\n\n"
+                L"尖针碰到泡泡即可将其戳破！\n"
+                L"注意：这不是发射子弹，而是近战攻击\n\n"
+                L"提示：移动鼠标瞄准，左键点击戳刺"
             );
-            m_hintText.setString("按 空格键 继续");
+            m_hintText.setString(L"按 空格键 继续");
             {
                 auto bounds = m_titleText.getLocalBounds();
                 m_titleText.setOrigin(bounds.left + bounds.width / 2.f, 0.f);
@@ -136,22 +136,22 @@ void TutorialState::nextStep() {
             break;
 
         case 2: // 三种敌人介绍
-            m_titleText.setString("敌人类型");
+            m_titleText.setString(L"敌人类型");
             m_contentText.setString(
-                "游戏中有三种泡泡敌人：\n\n"
-                "普通泡泡（彩色）：\n"
-                "  缓慢向玩家移动，碰到玩家造成伤害\n"
-                "  被尖针刺中即消失，+10分\n\n"
-                "射手泡泡（紫色）：\n"
-                "  与玩家保持200-300像素距离\n"
-                "  每3秒发射一颗子弹\n"
-                "  被消灭+30分\n\n"
-                "巨型泡泡（橙色，2倍大小）：\n"
-                "  血量x2，需要攻击两次才能击败\n"
-                "  接近时会冲刺，有冷却时间\n"
-                "  被消灭+50分"
+                L"游戏中有三种泡泡敌人：\n\n"
+                L"普通泡泡（彩色）：\n"
+                L"  缓慢向玩家移动，碰到玩家造成伤害\n"
+                L"  被尖针刺中即消失，+10分\n\n"
+                L"射手泡泡（紫色）：\n"
+                L"  与玩家保持200-300像素距离\n"
+                L"  每3秒发射一颗子弹\n"
+                L"  被消灭+30分\n\n"
+                L"巨型泡泡（橙色，2倍大小）：\n"
+                L"  血量x2，需要攻击两次才能击败\n"
+                L"  接近时会冲刺，有冷却时间\n"
+                L"  被消灭+50分"
             );
-            m_hintText.setString("按 空格键 继续");
+            m_hintText.setString(L"按 空格键 继续");
             {
                 auto bounds = m_titleText.getLocalBounds();
                 m_titleText.setOrigin(bounds.left + bounds.width / 2.f, 0.f);
@@ -159,20 +159,20 @@ void TutorialState::nextStep() {
             break;
 
         case 3: // 游戏目标
-            m_titleText.setString("游戏目标");
+            m_titleText.setString(L"游戏目标");
             m_contentText.setString(
-                "尽可能多地戳破泡泡，获得高分！\n\n"
-                "游戏规则：\n"
-                "  - 初始 5 点生命值\n"
-                "  - 被泡泡碰到损失 1 点生命\n"
-                "  - 受伤后有 1.5 秒无敌时间（角色闪烁）\n"
-                "  - 生命归零则游戏结束\n"
-                "  - 随着时间推移，难度会不断增加\n"
-                "  - 更多种类的泡泡会出现\n\n"
-                "死亡后可以提交你的成绩到排行榜！\n"
-                "排行榜只保留前 10 名"
+                L"尽可能多地戳破泡泡，获得高分！\n\n"
+                L"游戏规则：\n"
+                L"  - 初始 5 点生命值\n"
+                L"  - 被泡泡碰到损失 1 点生命\n"
+                L"  - 受伤后有 1.5 秒无敌时间（角色闪烁）\n"
+                L"  - 生命归零则游戏结束\n"
+                L"  - 随着时间推移，难度会不断增加\n"
+                L"  - 更多种类的泡泡会出现\n\n"
+                L"死亡后可以提交你的成绩到排行榜！\n"
+                L"排行榜只保留前 10 名"
             );
-            m_hintText.setString("按 空格键 开始游戏！");
+            m_hintText.setString(L"按 空格键 开始游戏！");
             {
                 auto bounds = m_titleText.getLocalBounds();
                 m_titleText.setOrigin(bounds.left + bounds.width / 2.f, 0.f);

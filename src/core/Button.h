@@ -16,11 +16,11 @@ public:
     };
 
     Button();
-    Button(const std::string& text, const sf::Font& font,
+    Button(const std::wstring& text, const sf::Font& font,
            unsigned int charSize, sf::Vector2f position,
            sf::Vector2f size = {200.f, 50.f});
 
-    void setText(const std::string& text);
+    void setText(const std::wstring& text);
     void setFont(const sf::Font& font);
     void setCharacterSize(unsigned int size);
     void setPosition(sf::Vector2f position);
@@ -46,6 +46,7 @@ public:
 private:
     sf::RectangleShape m_shape;
     sf::Text m_text;
+    std::wstring m_textStr;
     State m_state;
 
     sf::Color m_colorNormal;

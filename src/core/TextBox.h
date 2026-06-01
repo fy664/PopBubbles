@@ -18,22 +18,23 @@ public:
     void setPosition(sf::Vector2f position);
     void setSize(sf::Vector2f size);
     void setMaxChars(size_t max);
-    void setPlaceholder(const std::string& text);
+    void setPlaceholder(const std::wstring& text);
 
-    // 处理文字输入事件
+    // Process text input events
     void handleTextEntered(uint32_t unicode);
 
-    // 处理键盘（退格等）
+    // Process keyboard input (backspace, enter, etc.)
     void handleKeyInput();
 
-    // 更新（焦点、闪烁光标等）
+    // Update (focus, cursor blink)
     void update(sf::Vector2f mousePos, bool clicked);
 
-    // 渲染
+    // Render
     void render(sf::RenderWindow& window);
 
-    std::string getText() const;
-    void setText(const std::string& text);
+    std::string getText() const;        // Returns UTF-8 for leaderboard usage
+    std::wstring getWText() const;      // Returns wide string
+    void setText(const std::wstring& text);
     void clear();
 
     bool contains(sf::Vector2f point) const;
@@ -45,8 +46,8 @@ private:
     sf::RectangleShape m_shape;
     sf::Text m_text;
     sf::Text m_placeholder;
-    std::string m_content;
-    std::string m_placeholderStr;
+    std::wstring m_content;
+    std::wstring m_placeholderStr;
     size_t m_maxChars;
     bool m_focused;
     sf::Clock m_cursorClock;

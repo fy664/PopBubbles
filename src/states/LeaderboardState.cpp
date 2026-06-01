@@ -3,6 +3,7 @@
 #include "core/Game.h"
 #include "core/ResourceManager.h"
 #include "core/Input.h"
+#include <SFML/System/String.hpp>
 #include <iomanip>
 #include <sstream>
 
@@ -10,7 +11,7 @@ LeaderboardState::LeaderboardState() {
     auto& font = ResourceManager::getInstance().getFont("default");
 
     m_titleText.setFont(font);
-    m_titleText.setString("排行榜 - Top 10");
+    m_titleText.setString(L"排行榜 - Top 10");
     m_titleText.setCharacterSize(36);
     m_titleText.setFillColor(sf::Color(255, 220, 100));
     sf::FloatRect tb = m_titleText.getLocalBounds();
@@ -18,14 +19,14 @@ LeaderboardState::LeaderboardState() {
     m_titleText.setPosition(Game::WINDOW_WIDTH / 2.f, 30.f);
 
     m_emptyText.setFont(font);
-    m_emptyText.setString("暂无记录，快去玩游戏吧！");
+    m_emptyText.setString(L"暂无记录，快去玩游戏吧！");
     m_emptyText.setCharacterSize(24);
     m_emptyText.setFillColor(sf::Color(150, 150, 150));
     sf::FloatRect eb = m_emptyText.getLocalBounds();
     m_emptyText.setOrigin(eb.left + eb.width / 2.f, 0.f);
     m_emptyText.setPosition(Game::WINDOW_WIDTH / 2.f, 200.f);
 
-    m_backBtn = Button("返回", font, 24,
+    m_backBtn = Button(L"返回", font, 24,
                        sf::Vector2f(Game::WINDOW_WIDTH / 2.f - 100.f, Game::WINDOW_HEIGHT - 80.f),
                        sf::Vector2f(200.f, 50.f));
     m_backBtn.setColors(sf::Color(80, 80, 80), sf::Color(110, 110, 110), sf::Color(50, 50, 50));
@@ -81,7 +82,7 @@ void LeaderboardState::refreshEntries() {
     header.setCharacterSize(22);
     header.setFillColor(sf::Color(200, 200, 200));
 
-    std::string headerStr = "排名    姓名              得分        日期";
+    std::wstring headerStr = L"排名    姓名              得分        日期";
     header.setString(headerStr);
     header.setPosition(Game::WINDOW_WIDTH / 2.f - 250.f, startY);
     m_entryTexts.push_back(header);
@@ -91,7 +92,7 @@ void LeaderboardState::refreshEntries() {
     separator.setFont(font);
     separator.setCharacterSize(18);
     separator.setFillColor(sf::Color(80, 80, 80));
-    separator.setString("──────────────────────────────────────");
+    separator.setString(L"──────────────────────────────────────");
     separator.setPosition(Game::WINDOW_WIDTH / 2.f - 250.f, startY + 28.f);
     m_entryTexts.push_back(separator);
 
@@ -106,37 +107,33 @@ void LeaderboardState::refreshEntries() {
         else if (i == 2) entryText.setFillColor(sf::Color(205, 127, 50));  // 铜色
         else entryText.setFillColor(sf::Color::White);
 
-        // 格式化：将 name 转成 wstring
-        std::string wname(entries[i].name.begin(), entries[i].name.end());
-        std::string wdate(entries[i].date.begin(), entries[i].date.end());
+        // Convert UTF-8 name/date from leaderboard to wide strings
+        std::wstring wname = sf::String::fromUtf8(entries[i].name.begin(), entries[i].name.end());
+        std::wstring wdate = sf::String::fromUtf8(entries[i].date.begin(), entries[i].date.end());
 
-        // 固定宽度格式
-        std::ostringstream wss;
-        wss << "#" << (i + 1);
+        // Fixed-width formatting with wide strings
+        std::wostringstream wss;
+        wss << L"#" << (i + 1);
 
-        // 排名
-        std::string rankPart = wss.str();
-        // 姓名（最多截断显示）
-        std::string namePart = wname;
+        std::wstring rankPart = wss.str();
+        std::wstring namePart = wname;
         if (namePart.size() > 12) {
-            namePart = namePart.substr(0, 11) + "...";
+            namePart = namePart.substr(0, 11) + L"...";
         }
 
-        wss.str("");
+        wss.str(L"");
         wss.clear();
-        wss << rankPart << "     " << namePart;
-        // 填充空格
+        wss << rankPart << L"     " << namePart;
         size_t currentLen = rankPart.size() + 5 + namePart.size();
         while (currentLen < 30) {
-            wss << " ";
+            wss << L" ";
             currentLen++;
         }
         wss << entries[i].score;
-        // 填充空格到日期
-        std::string scoreStr = std::to_string(entries[i].score);
+        std::wstring scoreStr = std::to_wstring(entries[i].score);
         currentLen += scoreStr.size();
         while (currentLen < 42) {
-            wss << " ";
+            wss << L" ";
             currentLen++;
         }
         wss << wdate;

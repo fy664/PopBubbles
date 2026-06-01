@@ -13,7 +13,7 @@ GameOverState::GameOverState()
     auto& font = ResourceManager::getInstance().getFont("default");
 
     m_titleText.setFont(font);
-    m_titleText.setString("游戏结束");
+    m_titleText.setString(L"游戏结束");
     m_titleText.setCharacterSize(48);
     m_titleText.setFillColor(sf::Color(255, 100, 100));
     sf::FloatRect tb = m_titleText.getLocalBounds();
@@ -34,14 +34,14 @@ GameOverState::GameOverState()
     m_nameInput = TextBox(font, 28,
                           sf::Vector2f(Game::WINDOW_WIDTH / 2.f - 175.f, 220.f),
                           sf::Vector2f(350.f, 45.f), 10);
-    m_nameInput.setPlaceholder("输入你的名字...");
+    m_nameInput.setPlaceholder(L"输入你的名字...");
 
     m_nameInput.setCallback([this](const std::string&) {
         onSubmitScore();
     });
 
     // 提交按钮
-    m_submitBtn = Button("提交成绩", font, 24,
+    m_submitBtn = Button(L"提交成绩", font, 24,
                          sf::Vector2f(Game::WINDOW_WIDTH / 2.f - 120.f, 285.f),
                          sf::Vector2f(240.f, 45.f));
     m_submitBtn.setColors(sf::Color(40, 120, 40), sf::Color(50, 160, 50), sf::Color(30, 80, 30));
@@ -49,7 +49,7 @@ GameOverState::GameOverState()
     m_submitBtn.setCallback([this]() { onSubmitScore(); });
 
     // 返回主菜单按钮
-    m_returnBtn = Button("返回主菜单", font, 24,
+    m_returnBtn = Button(L"返回主菜单", font, 24,
                          sf::Vector2f(Game::WINDOW_WIDTH / 2.f - 120.f, 420.f),
                          sf::Vector2f(240.f, 45.f));
     m_returnBtn.setColors(sf::Color(100, 60, 30), sf::Color(140, 80, 40), sf::Color(70, 40, 20));
@@ -87,7 +87,7 @@ void GameOverState::update(float deltaTime) {
     m_submitBtn.update(mousePos);
     m_returnBtn.update(mousePos);
 
-    m_scoreText.setString("最终得分: " + std::to_string(m_score));
+    m_scoreText.setString(L"最终得分: " + std::to_wstring(m_score));
     sf::FloatRect sb = m_scoreText.getLocalBounds();
     m_scoreText.setOrigin(sb.left + sb.width / 2.f, 0.f);
 }
@@ -117,7 +117,7 @@ void GameOverState::onSubmitScore() {
     Leaderboard::addEntry(name, m_score);
     m_submitted = true;
 
-    m_statusText.setString("成绩已提交！排名前10的记录已保存");
+    m_statusText.setString(L"成绩已提交！排名前10的记录已保存");
     sf::FloatRect sb = m_statusText.getLocalBounds();
     m_statusText.setOrigin(sb.left + sb.width / 2.f, 0.f);
 }

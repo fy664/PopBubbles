@@ -345,9 +345,9 @@ void GameState::spawnEnemy(float deltaTime) {
 }
 
 void GameState::updateUI() {
-    m_scoreText.setString("得分: " + std::to_string(m_score));
-    m_hpText.setString("生命: " + std::to_string(m_player.getHP()) + "/" + std::to_string(Player::MAX_HP));
-    m_waveText.setString("难度: " + std::to_string(m_difficultyLevel));
+    m_scoreText.setString(L"得分: " + std::to_wstring(m_score));
+    m_hpText.setString(L"生命: " + std::to_wstring(m_player.getHP()) + L"/" + std::to_wstring(Player::MAX_HP));
+    m_waveText.setString(L"难度: " + std::to_wstring(m_difficultyLevel));
 }
 
 void GameState::render(sf::RenderWindow& window) {

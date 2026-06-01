@@ -13,7 +13,7 @@ Button::Button()
     m_shape.setOutlineColor(sf::Color::White);
 }
 
-Button::Button(const std::string& text, const sf::Font& font,
+Button::Button(const std::wstring& text, const sf::Font& font,
                unsigned int charSize, sf::Vector2f position,
                sf::Vector2f size)
     : Button() {
@@ -25,9 +25,10 @@ Button::Button(const std::string& text, const sf::Font& font,
     setSize(size);
 }
 
-void Button::setText(const std::string& text) {
-    m_text.setString(text);
-    // 居中文字
+void Button::setText(const std::wstring& text) {
+    m_textStr = text;
+    m_text.setString(m_textStr);
+    // Center text
     sf::FloatRect textBounds = m_text.getLocalBounds();
     m_text.setOrigin(textBounds.left + textBounds.width / 2.f,
                      textBounds.top + textBounds.height / 2.f);
@@ -35,7 +36,7 @@ void Button::setText(const std::string& text) {
 
 void Button::setFont(const sf::Font& font) {
     m_text.setFont(font);
-    // 重新居中
+    // Re-center
     sf::FloatRect textBounds = m_text.getLocalBounds();
     m_text.setOrigin(textBounds.left + textBounds.width / 2.f,
                      textBounds.top + textBounds.height / 2.f);
@@ -50,7 +51,7 @@ void Button::setCharacterSize(unsigned int size) {
 
 void Button::setPosition(sf::Vector2f position) {
     m_shape.setPosition(position);
-    // 文字居中于按钮
+    // Center text in button
     sf::Vector2f shapeSize = m_shape.getSize();
     m_text.setPosition(position.x + shapeSize.x / 2.f,
                        position.y + shapeSize.y / 2.f);
@@ -58,7 +59,7 @@ void Button::setPosition(sf::Vector2f position) {
 
 void Button::setSize(sf::Vector2f size) {
     m_shape.setSize(size);
-    // 重新居中文字
+    // Re-center text
     m_text.setPosition(m_shape.getPosition().x + size.x / 2.f,
                        m_shape.getPosition().y + size.y / 2.f);
 }
@@ -101,7 +102,6 @@ void Button::handleClick(sf::Vector2f mousePos) {
 }
 
 void Button::render(sf::RenderWindow& window) {
-    // 根据状态调整颜色
     switch (m_state) {
         case State::Normal:
             m_shape.setFillColor(m_colorNormal);
